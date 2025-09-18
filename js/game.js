@@ -2,6 +2,7 @@ import Laser from "./laser.js";
 import Ship from "./ship.js";
 import settings from "./settings.js";
 import GameObject from "./gameObject.js";
+import ParticleEffect from "./particles.js";
 
 
 class Game {
@@ -17,6 +18,7 @@ class Game {
         this.ship = new Ship(120, this.canvas.height / 2);
         this.lasers = [];
         this.targets = [];
+        this.particleEffects = [];
 
         this.createEventListeners();
         this.spawnTargets();
@@ -67,6 +69,9 @@ class Game {
                     this.score++;
                     laserIndicesToRemove.push(i);
                     targetIndicesToRemove.push(j);
+
+                    // spawn a particle effect
+                    this.particleEffects.push(new ParticleEffect(target.x + target.width / 2, target.y + target.height / 2));
                 
                     // if a target was hit, go back to moving state and spawn a new target
                     this.ship.isWaitingShotResult = false;
@@ -99,6 +104,10 @@ class Game {
 
     update() {
         this.ship.update();
+        this.particleEffects.forEach(p => p.update());
+
+        // remove completed effects
+        this.particleEffects = this.particleEffects.filter(p => !p.isEffectComplete);
     
         // emit a laser if ship is firing
         if(this.ship.isFiring) {
@@ -140,6 +149,7 @@ class Game {
         this.ship.draw(this.ctx);
         this.lasers.forEach(l => l.draw(this.ctx));
         this.targets.forEach(t => t.draw(this.ctx));
+        this.particleEffects.forEach(p => p.draw(this.ctx));
 
         this.drawUi();
     }
