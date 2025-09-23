@@ -4,6 +4,7 @@ import settings from "./settings.js";
 import GameObject from "./gameObject.js";
 import ParticleEffect from "./particles.js";
 
+const STARTING_LIVES = 3;
 
 class Game {
     constructor(canvasElement) {
@@ -14,7 +15,7 @@ class Game {
         this.canvas.height = window.innerHeight;
 
         this.score = 0;
-        this.lives = 3;
+        this.lives = STARTING_LIVES;
         this.ship = new Ship(120, this.canvas.height / 2);
         this.lasers = [];
         this.targets = [];
@@ -27,6 +28,11 @@ class Game {
     createEventListeners() {
         window.addEventListener("keydown", ev => {
             if(ev.key === " ") {
+                if(this.lives <= 0) {
+                    this.resetGame();
+                    return;
+                }
+
                 if(this.ship.isMoving) {
                     this.ship.isMoving = false;
                     this.ship.isPreppingFire = true;
@@ -94,14 +100,6 @@ class Game {
         }
     }
 
-    drawUi() {
-        this.ctx.beginPath();
-        this.ctx.fillStyle = "white";
-        this.ctx.font = "18px Arial"
-        this.ctx.fillText(`Score: ${this.score}`, 10, 20);
-        this.ctx.fillText(`Lives: ${this.lives}`, 10, 50);
-    }
-
     update() {
         this.ship.update();
         this.particleEffects.forEach(p => p.update());
@@ -144,14 +142,52 @@ class Game {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         this.ship.draw(this.ctx);
         this.lasers.forEach(l => l.draw(this.ctx));
         this.targets.forEach(t => t.draw(this.ctx));
         this.particleEffects.forEach(p => p.draw(this.ctx));
 
         this.drawUi();
+    }
+
+    drawUi() {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = "white";
+        this.ctx.font = "18px Arial"
+        this.ctx.textAlign = "left";
+        this.ctx.fillText(`Score: ${this.score}`, 10, 20);
+        this.ctx.fillText(`Lives: ${this.lives}`, 10, 50);
+    }
+
+    drawGameOver() {
+        this.ctx.beginPath();
+        this.ctx.font = "30px Arial";
+        this.ctx.textAlign = "center";
+        this.ctx.fillText("Game over", this.canvas.width / 2, this.canvas.height / 2);
+        this.ctx.fillText("press space to restart", this.canvas.width / 2, this.canvas.height / 2 + 50);
+    }
+
+    resetGame() {
+        this.score = 0;
+        this.lives = STARTING_LIVES;
+        this.lasers = [];
+        this.targets = [];
+        this.particleEffects = [];
+        this.spawnTargets();
+    }
+
+    run() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if(this.lives <= 0) {
+            this.drawGameOver();
+        }
+        else {
+            this.update();
+            this.draw();
+        }
+
+        setTimeout(() => requestAnimationFrame(() => this.run()), 1000 / 60);
     }
 }
 

@@ -16,7 +16,7 @@ with a full meter, the laser will be extra big, giving you a better chance at hi
 ## Unfinished business
 
 - [ ] show a help menu in the game to explain how to play
-- [ ] game over screen - I didn't get to this on the flights, but when your lives keep decrementing forever, so you never lose at the moment
+- [x] game over screen - I didn't get to this on the flights, but when your lives keep decrementing forever, so you never lose at the moment
 - [ ] power ups
 - [ ] make it play nicely on mobile? (idk if I feel like doing this)
 - [ ] speed up the game over time (both ship moving speed and meter speed)
