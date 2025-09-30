@@ -73,6 +73,13 @@ class Game {
                 
                 if(this.areObjectsColliding(laser, target)) {
                     this.score++;
+
+                    // if score is greater than 3, increase move speed each time a target is hit
+                    if(this.score >= 3) {
+                        const moveDir = this.ship.yVel / Math.abs(this.ship.yVel); // get direction ship is moving (1 or -1)
+                        this.ship.yVel += (0.5 * moveDir);
+                    }
+
                     laserIndicesToRemove.push(i);
                     targetIndicesToRemove.push(j);
 
